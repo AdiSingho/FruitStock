@@ -29,4 +29,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function qcReturs()
+    {
+        return $this->hasMany(QcRetur::class);
+    }
+
+    public function transaksis()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }
