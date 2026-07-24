@@ -28,3 +28,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('buah', \App\Http\Controllers\BuahController::class);
         Route::resource('stok', \App\Http\Controllers\StokController::class);
     });
+
+// Rute Operasional Kasir (Bisa diakses Admin dan Kasir)
+    Route::middleware('role:admin,kasir')->group(function () {
+        Route::get('transaksi', [\App\Http\Controllers\TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::get('transaksi/create', [\App\Http\Controllers\TransaksiController::class, 'create'])->name('transaksi.create');
+        Route::post('transaksi', [\App\Http\Controllers\TransaksiController::class, 'store'])->name('transaksi.store');
+    });
