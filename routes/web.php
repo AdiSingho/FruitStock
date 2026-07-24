@@ -19,3 +19,13 @@ Route::middleware('auth')->group(function () {
         return "Berhasil Login! Selamat datang, " . $user->name . ". Role Anda adalah: " . strtoupper($user->role);
     })->middleware('role:admin,gudang,kasir');
 });
+
+// Rute Master Data (Bisa diakses Admin dan Petugas Gudang)
+    Route::middleware('role:admin,gudang')->group(function () {
+        Route::resource('kategori', \App\Http\Controllers\KategoriController::class);
+        Route::resource('gudang', \App\Http\Controllers\GudangController::class);
+        Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
+        
+        // Tambahkan rute buah di sini
+        Route::resource('buah', \App\Http\Controllers\BuahController::class);
+    });
