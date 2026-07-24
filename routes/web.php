@@ -25,7 +25,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('kategori', \App\Http\Controllers\KategoriController::class);
         Route::resource('gudang', \App\Http\Controllers\GudangController::class);
         Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
-        
-        // Tambahkan rute buah di sini
         Route::resource('buah', \App\Http\Controllers\BuahController::class);
+        Route::resource('stok', \App\Http\Controllers\StokController::class);
     });
