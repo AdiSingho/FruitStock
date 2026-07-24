@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
         Route::resource('buah', \App\Http\Controllers\BuahController::class);
         Route::resource('stok', \App\Http\Controllers\StokController::class);
+        Route::resource('qc-retur', \App\Http\Controllers\QcReturController::class);
     });
 
 // Rute Operasional Kasir (Bisa diakses Admin dan Kasir)
