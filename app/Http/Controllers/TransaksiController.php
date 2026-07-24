@@ -12,36 +12,38 @@ use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
+    // Menampilkan riwayat transaksi
     public function index()
     {
-        // Menampilkan riwayat transaksi (bisa dilihat Kasir & Admin)
         $transaksis = Transaksi::with(['user'])->orderBy('created_at', 'desc')->get();
-        return response()->json($transaksis);
+        return view('transaksi.index', compact('transaksis'));
     }
 
+    // Menampilkan halaman Kasir/POS
     public function create()
     {
-        // return view('transaksi.pos'); // Halaman mesin kasir
+        $buahs = Buah::all();
+        return view('transaksi.create', compact('buahs'));
     }
 
+    // Memproses transaksi
     public function store(StoreTransaksiRequest $request)
     {
         $keranjang = $request->validated()['keranjang'];
         
-        // Memulai transaksi database agar jika error, data tidak tersimpan setengah-setengah
         DB::beginTransaction();
         
         try {
             $totalHarga = 0;
             
-            // 1. Buat Header Transaksi terlebih dahulu
+            // 1. Buat Header Transaksi
             $transaksi = Transaksi::create([
                 'user_id' => auth()->id(),
-                'total_harga' => 0, // Set 0 dulu, nanti di-update
+                'total_harga' => 0, 
                 'tanggal_transaksi' => now(),
             ]);
 
-            // 2. Looping setiap barang di keranjang
+            // 2. Looping keranjang
             foreach ($keranjang as $item) {
                 $buah = Buah::findOrFail($item['buah_id']);
                 $qtyDibutuhkan = $item['qty'];
@@ -50,37 +52,34 @@ class TransaksiController extends Controller
                 $subtotalItem = $qtyDibutuhkan * $hargaSatuan;
                 $totalHarga += $subtotalItem;
 
-                // 3. Catat ke Transaksi Detail
+                // 3. Catat Transaksi Detail
                 TransaksiDetail::create([
                     'transaksi_id' => $transaksi->id,
-                    'stok_id' => null, // Dikosongkan sementara atau direlasi ke stok spesifik jika perlu audit batch
+                    'stok_id' => null, 
                     'qty' => $qtyDibutuhkan,
                     'harga_satuan' => $hargaSatuan,
                     'subtotal' => $subtotalItem,
                 ]);
 
-                // 4. ALGORITMA FEFO (Cari stok dari kadaluarsa paling dekat)
+                // 4. ALGORITMA FEFO
                 $stokTersedia = Stok::where('buah_id', $buah->id)
                                     ->where('jumlah', '>', 0)
                                     ->orderBy('estimasi_kadaluarsa', 'asc')
                                     ->get();
 
-                // Cek apakah stok total mencukupi
                 if ($stokTersedia->sum('jumlah') < $qtyDibutuhkan) {
                     throw new \Exception("Stok {$buah->nama_buah} tidak mencukupi!");
                 }
 
-                // 5. Kurangi stok satu per satu berdasarkan batch terdekat
+                // 5. Kurangi stok
                 foreach ($stokTersedia as $stokBatch) {
                     if ($qtyDibutuhkan <= 0) break;
 
                     if ($stokBatch->jumlah >= $qtyDibutuhkan) {
-                        // Jika batch ini cukup untuk memenuhi sisa kebutuhan
                         $stokBatch->jumlah -= $qtyDibutuhkan;
                         $stokBatch->save();
                         $qtyDibutuhkan = 0;
                     } else {
-                        // Jika batch ini tidak cukup, kurangi semua, lalu lanjut ke batch berikutnya
                         $qtyDibutuhkan -= $stokBatch->jumlah;
                         $stokBatch->jumlah = 0;
                         $stokBatch->save();
@@ -88,15 +87,38 @@ class TransaksiController extends Controller
                 }
             }
 
-            // 6. Update total harga transaksi
+            // 6. Update total
             $transaksi->update(['total_harga' => $totalHarga]);
 
-            DB::commit(); // Simpan semua perubahan permanen
-            return response()->json(['message' => 'Transaksi berhasil diproses!', 'data' => $transaksi]);
+            DB::commit(); 
+            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diproses!');
 
         } catch (\Exception $e) {
-            DB::rollBack(); // Batalkan semua proses jika terjadi error
-            return response()->json(['message' => $e->getMessage()], 422);
+            DB::rollBack();
+            return back()->withErrors(['message' => $e->getMessage()]);
         }
+    }
+
+    // Menampilkan detail invoice
+    public function show($id)
+    {
+        $transaksi = Transaksi::with(['transaksiDetails', 'user'])->findOrFail($id);
+        return view('transaksi.show', compact('transaksi'));
+    }
+
+    // Transaksi bersifat final, tidak bisa diedit
+    public function edit(Transaksi $transaksi)
+    {
+        abort(403, 'Transaksi tidak dapat diubah.');
+    }
+
+    public function update(Request $request, Transaksi $transaksi)
+    {
+        abort(403, 'Transaksi tidak dapat diubah.');
+    }
+
+    public function destroy(Transaksi $transaksi)
+    {
+        abort(403, 'Transaksi tidak dapat dihapus.');
     }
 }
