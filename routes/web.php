@@ -1,38 +1,32 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController};
 
-// Rute untuk pengguna yang BELUM login (guest)
+// Guest (Belum Login)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Rute untuk pengguna yang SUDAH login (auth)
+// Auth (Sudah Login)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
-    // Uji coba Middleware Multi-Role: Semua role boleh masuk dashboard
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        return "Berhasil Login! Selamat datang, " . $user->name . ". Role Anda adalah: " . strtoupper($user->role);
-    })->middleware('role:admin,gudang,kasir');
-});
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Rute Master Data (Bisa diakses Admin dan Petugas Gudang)
+    // Admin & Gudang
     Route::middleware('role:admin,gudang')->group(function () {
-        Route::resource('kategori', \App\Http\Controllers\KategoriController::class);
-        Route::resource('gudang', \App\Http\Controllers\GudangController::class);
-        Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
-        Route::resource('buah', \App\Http\Controllers\BuahController::class);
-        Route::resource('stok', \App\Http\Controllers\StokController::class);
-        Route::resource('qc-retur', \App\Http\Controllers\QcReturController::class);
+        Route::resource('kategori', KategoriController::class);
+        Route::resource('gudang', GudangController::class);
+        Route::resource('supplier', SupplierController::class);
+        Route::resource('buah', BuahController::class);
+        Route::resource('stok', StokController::class);
+        Route::resource('qc-retur', QcReturController::class);
     });
 
-// Rute Operasional Kasir (Bisa diakses Admin dan Kasir)
+    // Admin & Kasir
     Route::middleware('role:admin,kasir')->group(function () {
-        Route::get('transaksi', [\App\Http\Controllers\TransaksiController::class, 'index'])->name('transaksi.index');
-        Route::get('transaksi/create', [\App\Http\Controllers\TransaksiController::class, 'create'])->name('transaksi.create');
-        Route::post('transaksi', [\App\Http\Controllers\TransaksiController::class, 'store'])->name('transaksi.store');
+        Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::get('transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
+        Route::post('transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
     });
+});

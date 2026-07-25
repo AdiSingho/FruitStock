@@ -11,9 +11,8 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori::all();
-        // return view('kategori.index', compact('kategoris'));
-        return response()->json($kategoris); // Kita return JSON sementara untuk tes logika
+        $kategoris = Kategori::all(); // Mengambil data
+        return view('kategori.index', compact('kategoris')); // Mengirim data
     }
 
     public function create()
@@ -21,12 +20,20 @@ class KategoriController extends Controller
         // return view('kategori.create');
     }
 
-    public function store(StoreKategoriRequest $request)
+   public function store(Request $request)
     {
-        // Data sudah otomatis tervalidasi oleh StoreKategoriRequest
-        Kategori::create($request->validated());
-        
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
+        // 1. Validasi input
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+        ]);
+
+        // 2. Simpan ke database
+        \App\Models\Kategori::create([
+            'nama_kategori' => $request->nama_kategori,
+        ]);
+
+        // 3. Redirect kembali ke halaman index dengan pesan sukses
+        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan!');
     }
 
     public function show(Kategori $kategori)
@@ -34,22 +41,26 @@ class KategoriController extends Controller
         //
     }
 
-    public function edit(Kategori $kategori)
+    // Menampilkan form edit
+    public function edit($id)
     {
-        // return view('kategori.edit', compact('kategori'));
+        $kategori = \App\Models\Kategori::findOrFail($id);
+        return view('kategori.edit', compact('kategori'));
     }
 
-    public function update(UpdateKategoriRequest $request, Kategori $kategori)
+    // Menyimpan perubahan data
+    public function update(Request $request, $id)
     {
-        // Data sudah otomatis tervalidasi oleh UpdateKategoriRequest
-        $kategori->update($request->validated());
-        
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui.');
+        $kategori = \App\Models\Kategori::findOrFail($id);
+        $kategori->update($request->all());
+        return redirect()->route('kategori.index')->with('success', 'Data berhasil diubah!');
     }
 
-    public function destroy(Kategori $kategori)
+    // Menghapus data
+    public function destroy($id)
     {
+        $kategori = \App\Models\Kategori::findOrFail($id);
         $kategori->delete();
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('kategori.index')->with('success', 'Data berhasil dihapus!');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 
@@ -11,18 +12,28 @@ class SupplierController extends Controller
     public function index()
     {
         $suppliers = Supplier::all();
-        return response()->json($suppliers);
+        return view('supplier.index', compact('suppliers'));
     }
 
     public function create()
     {
-        // return view('supplier.create');
+         return view('supplier.create');
     }
 
-    public function store(StoreSupplierRequest $request)
+    public function store(Request $request)
     {
-        Supplier::create($request->validated());
-        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil ditambahkan.');
+        // 1. Validasi
+        $request->validate([
+            'nama_supplier' => 'required',
+            'alamat' => 'required',
+            'no_hp' => 'required',
+        ]);
+
+        // 2. Simpan
+        \App\Models\Supplier::create($request->all());
+
+        // 3. Redirect
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil ditambahkan!');
     }
 
     public function show(Supplier $supplier)
@@ -30,20 +41,21 @@ class SupplierController extends Controller
         //
     }
 
-    public function edit(Supplier $supplier)
+        public function edit($id)
     {
-        // return view('supplier.edit', compact('supplier'));
+        $supplier = \App\Models\Supplier::findOrFail($id);
+        return view('supplier.edit', compact('supplier'));
     }
 
-    public function update(UpdateSupplierRequest $request, Supplier $supplier)
+    public function update(Request $request, $id)
     {
-        $supplier->update($request->validated());
-        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil diperbarui.');
+        \App\Models\Supplier::findOrFail($id)->update($request->all());
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil diupdate!');
     }
 
-    public function destroy(Supplier $supplier)
+    public function destroy($id)
     {
-        $supplier->delete();
-        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus.');
+        \App\Models\Supplier::findOrFail($id)->delete();
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus!');
     }
 }
