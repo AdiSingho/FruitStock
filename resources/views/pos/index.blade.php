@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Kasir (POS) - FruitStock')
+
 @section('main-content')
 
 <!-- TEMPAT MUNCULNYA PESAN SUKSES / ERROR -->
@@ -35,13 +37,12 @@
         
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($stoks as $stok)
-            <!-- Perhatikan ada tambahan $stok->jumlah di bagian onclick -->
             <div class="border p-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border-gray-200" 
                  onclick="tambahKeKeranjang({{ $stok->id }}, '{{ $stok->buah->nama_buah }}', {{ $stok->buah->harga_jual }}, {{ $stok->jumlah }})">
                 
                 <div class="font-bold text-gray-800">{{ $stok->buah->nama_buah }}</div>
                 <div class="text-xs text-gray-500 mb-2">Batch: {{ $stok->kode_batch }}</div>
-                <div class="text-sm font-medium text-blue-600">Sisa Stok: {{ $stok->jumlah }}</div>
+                <div class="text-sm font-medium text-blue-600">Sisa Stok: {{ $stok->jumlah }} kg</div>
                 
                 <div class="mt-2 text-lg font-bold text-green-600">
                     Rp {{ number_format($stok->buah->harga_jual, 0, ',', '.') }}
@@ -55,7 +56,7 @@
     <div class="bg-white p-6 rounded-2xl shadow-sm border h-fit sticky top-6">
         <h2 class="text-xl font-bold mb-6">Keranjang</h2>
         
-        <form action="{{ route('transaksi.store') }}" method="POST">
+        <form action="{{ route('pos.store') }}" method="POST">
             @csrf
             
             <div id="keranjang-items" class="min-h-[150px] mb-4 space-y-3">
@@ -70,6 +71,12 @@
                 
                 <input type="hidden" name="total_harga" id="input-total-harga" value="0">
                 
+                <!-- Input Uang Bayar -->
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Uang Bayar (Rp)</label>
+                    <input type="number" name="bayar" class="w-full border border-gray-300 rounded-lg p-3 font-bold text-lg" required min="0">
+                </div>
+                
                 <button type="submit" id="btn-bayar" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold disabled:bg-gray-400" disabled>
                     PROSES PEMBAYARAN
                 </button>
@@ -82,7 +89,6 @@
     let keranjang = {};
     let totalHarga = 0;
 
-    // Menambah barang pertama kali / +1
     function tambahKeKeranjang(stokId, namaBuah, harga, stokMaks) {
         if(keranjang[stokId]) {
             if(keranjang[stokId].qty < stokMaks) {
@@ -103,15 +109,12 @@
         renderKeranjang();
     }
 
-    // Fungsi baru untuk mengubah (ketik) jumlah secara bebas
     function ubahQty(stokId, nilaiBaru) {
         let qtyBaru = parseFloat(nilaiBaru);
         
-        // Hapus barang jika qty diisi 0 atau kosong
         if (isNaN(qtyBaru) || qtyBaru <= 0) {
             delete keranjang[stokId];
         } 
-        // Cek agar tidak melebihi stok gudang
         else if (qtyBaru > keranjang[stokId].max) {
             alert('Jumlah melebihi stok yang tersedia!');
             keranjang[stokId].qty = keranjang[stokId].max;
@@ -120,7 +123,6 @@
             keranjang[stokId].qty = qtyBaru;
         }
 
-        // Hitung ulang subtotal
         if(keranjang[stokId]) {
             keranjang[stokId].subtotal = keranjang[stokId].qty * keranjang[stokId].harga;
         }
@@ -149,7 +151,6 @@
                         <div class="text-xs text-gray-500">@ Rp ${item.harga.toLocaleString('id-ID')}</div>
                     </div>
                     
-                    <!-- Kotak Input QTY Baru (Bisa Diketik) -->
                     <div class="mx-3">
                         <input type="number" step="any" min="0" max="${item.max}" value="${item.qty}" 
                                class="w-16 border rounded text-center p-1 font-bold bg-gray-50 focus:bg-white"

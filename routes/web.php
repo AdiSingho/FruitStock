@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController};
+
+use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController, PosController};
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -28,5 +29,9 @@ Route::middleware('auth')->group(function () {
         Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::get('transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
         Route::post('transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+
+        // 2. Rute POS ditambahkan di sini, berdampingan dengan transaksi
+        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+        Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
     });
 });
