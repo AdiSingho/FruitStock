@@ -11,7 +11,9 @@ class GudangController extends Controller
 {
     public function index()
     {
-        $gudangs = Gudang::all();
+        // Menggunakan with('stoks') agar data stok di gudang terbawa
+        $gudangs = \App\Models\Gudang::with('stoks')->get();
+        
         return view('gudang.index', compact('gudangs'));
     }
 

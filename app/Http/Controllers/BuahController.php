@@ -12,11 +12,9 @@ class BuahController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data buah dari database
-        // with('kategori') adalah teknik Eager Loading untuk menghindari masalah N+1 Query
-        $buahs = \App\Models\Buah::with('kategori')->get();
+        // Kita panggil kategori DAN stoks agar bisa dihitung totalnya di tampilan nanti
+        $buahs = \App\Models\Buah::with(['kategori', 'stoks'])->get();
         
-        // Mengirim data $buahs ke file view (tampilan)
         return view('buah.index', compact('buahs')); 
     }
 

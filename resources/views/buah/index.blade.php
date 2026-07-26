@@ -21,6 +21,7 @@
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Kategori</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Harga Jual</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Satuan</th>
+                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Total Stok</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase text-right">Aksi</th>
             </tr>
         </thead>
@@ -38,8 +39,14 @@
             <td class="px-6 py-4 text-gray-600">Rp {{ number_format($buah->harga_jual, 0, ',', '.') }}</td>
             
             <td class="px-6 py-4 text-gray-600">{{ $buah->satuan }}</td>
+            <td class="px-6 py-4 font-bold text-green-600">{{ $buah->stoks->sum('jumlah') }}</td>
             
             <td class="px-6 py-4 text-right space-x-2">
+                <!-- Tambahkan ini di sebelah tombol Edit/Hapus -->
+                <a href="{{ route('stok.create', ['buah_id' => $buah->id]) }}" 
+                class="text-green-600 hover:text-green-800 text-sm font-medium mr-2">
+                + Stok
+                </a>
                 <a href="{{ route('buah.edit', $buah->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
                 <form action="{{ route('buah.destroy', $buah->id) }}" method="POST" class="inline">
                     @csrf @method('DELETE')

@@ -14,6 +14,7 @@
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Kode Rak</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Kapasitas</th>
                 <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Keterangan</th>
+                <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Total Stok</th>
                 <th class="px-6 py-4 text-right">Aksi</th>
             </tr>
         </thead>
@@ -23,6 +24,7 @@
                 <td class="px-6 py-4 font-medium">{{ $gudang->kode_rak }}</td>
                 <td class="px-6 py-4">{{ $gudang->kapasitas }}</td>
                 <td class="px-6 py-4 text-gray-600">{{ $gudang->keterangan }}</td>
+                <td class="px-6 py-4 font-bold text-green-600">{{ $gudang->stoks->sum('jumlah') }}</td>
                 <td class="px-6 py-4 text-right space-x-2">
                     <a href="{{ route('gudang.edit', $gudang->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
                     <form action="{{ route('gudang.destroy', $gudang->id) }}" method="POST" class="inline">

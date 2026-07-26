@@ -2,46 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Stok;
 use App\Models\Buah;
+use App\Models\Gudang;    // <--- INI PENTING
+use App\Models\Supplier;  // <--- INI PENTING
 use App\Http\Requests\StoreStokRequest;
 use App\Http\Requests\UpdateStokRequest;
-use Carbon\Carbon; // Wajib dipanggil untuk manipulasi tanggal
+use Carbon\Carbon; 
 
 class StokController extends Controller
 {
     public function index()
     {
-        // Eager loading 3 relasi sekaligus
         $stoks = Stok::with(['buah', 'gudang', 'supplier'])->get();
         return response()->json($stoks);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // return view('stok.create');
-    }
-
-    public function store(StoreStokRequest $request)
-    {
-        $data = $request->validated();
-
-        // 1. Generate Kode Batch otomatis (contoh: BCH-17032026-X)
-        $data['kode_batch'] = 'BCH-' . time();
-
-        // 2. Hitung Estimasi Kadaluarsa otomatis
-        $buah = Buah::findOrFail($data['buah_id']);
-        $tanggalMasuk = Carbon::parse($data['tanggal_masuk']);
+        $selectedBuahId = $request->query('buah_id');
+        $buahs = Buah::all();
+        $gudangs = Gudang::all();
+        $suppliers = Supplier::all(); 
         
-        // Menambahkan hari sesuai masa simpan buah ke tanggal masuk
-        $data['estimasi_kadaluarsa'] = $tanggalMasuk->addDays($buah->estimasi_masa_simpan);
-
-        // 3. Set status default
-        $data['status'] = 'Aman';
-
-        Stok::create($data);
-        return redirect()->route('stok.index')->with('success', 'Stok berhasil ditambahkan.');
+        return view('stok.create', compact('buahs', 'gudangs', 'suppliers', 'selectedBuahId'));
     }
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'buah_id' => 'required',
+        'gudang_id' => 'required',
+        'supplier_id' => 'required',
+        'kode_batch' => 'required',
+        'jumlah' => 'required|numeric',
+        'tanggal_masuk' => 'required|date',
+    ]);
+
+    // 1. Ambil data buah untuk mendapatkan masa simpannya
+    $buah = Buah::findOrFail($request->buah_id);
+
+    // 2. Hitung estimasi kadaluarsa otomatis
+    $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
+    $estimasiKadaluarsa = $tanggalMasuk->addDays($buah->estimasi_masa_simpan);
+
+    // 3. Simpan ke database dengan estimasi yang sudah dihitung
+    Stok::create([
+        'buah_id' => $request->buah_id,
+        'gudang_id' => $request->gudang_id,
+        'supplier_id' => $request->supplier_id,
+        'kode_batch' => $request->kode_batch,
+        'jumlah' => $request->jumlah,
+        'tanggal_masuk' => $request->tanggal_masuk,
+        'estimasi_kadaluarsa' => $estimasiKadaluarsa, // <--- Ini yang menghilangkan error
+        'status' => 'Aman',
+    ]);
+
+    return redirect()->route('buah.index')->with('success', 'Stok berhasil ditambahkan!');
+}
 
     public function show(Stok $stok)
     {
@@ -58,8 +77,8 @@ class StokController extends Controller
     {
         $data = $request->validated();
         
-        // Jika buah_id atau tanggal_masuk diubah, hitung ulang estimasi kadaluarsanya
-        if ($stok->buah_id != $data['buah_id'] || $stok->tanggal_masuk != $data['tanggal_masuk']) {
+        // Cek jika ada input tanggal_masuk untuk update estimasi
+        if (isset($data['tanggal_masuk']) && ($stok->buah_id != $data['buah_id'] || $stok->tanggal_masuk != $data['tanggal_masuk'])) {
             $buah = Buah::findOrFail($data['buah_id']);
             $tanggalMasuk = Carbon::parse($data['tanggal_masuk']);
             $data['estimasi_kadaluarsa'] = $tanggalMasuk->addDays($buah->estimasi_masa_simpan);
