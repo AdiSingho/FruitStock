@@ -10,12 +10,19 @@ use App\Http\Requests\UpdateBuahRequest;
 
 class BuahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Kita panggil kategori DAN stoks agar bisa dihitung totalnya di tampilan nanti
-        $buahs = \App\Models\Buah::with(['kategori', 'stoks'])->get();
+        // Memulai query dengan relasi kategori dan stoks
+        $query = \App\Models\Buah::with(['kategori', 'stoks']);
+
+        // Cek jika ada input pencarian
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_buah', 'LIKE', '%' . $request->search . '%');
+        }
+
+        $buahs = $query->latest()->get();
         
-        return view('buah.index', compact('buahs')); 
+        return view('buah.index', compact('buahs'));
     }
 
     public function create()

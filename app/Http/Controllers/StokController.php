@@ -13,12 +13,33 @@ use Carbon\Carbon;
 
 class StokController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $stoks = Stok::with(['buah', 'gudang', 'supplier'])->get();
-        return response()->json($stoks);
-    }
+        dd($request->search);
+        // 1. Mulai query dan panggil relasi
+        $query = \App\Models\Stok::with(['buah', 'gudang', 'supplier']);
 
+        // 2. Jika ada request 'search' dari URL
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            
+            // 3. Bungkus query pencarian di dalam function() agar lebih spesifik dan aman
+            $query->where(function($q) use ($search) {
+                $q->where('kode_batch', 'LIKE', '%' . $search . '%')
+                  ->orWhereHas('buah', function($q2) use ($search) {
+                      $q2->where('nama_buah', 'LIKE', '%' . $search . '%');
+                  })
+                  ->orWhereHas('supplier', function($q2) use ($search) {
+                      $q2->where('nama_supplier', 'LIKE', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // 4. Eksekusi query
+        $stoks = $query->latest()->get(); 
+        
+        return view('stok.index', compact('stoks'));
+    }
     public function create(Request $request)
     {
         $selectedBuahId = $request->query('buah_id');
