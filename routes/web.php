@@ -30,7 +30,10 @@ Route::middleware('auth')->group(function () {
         Route::get('transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
         Route::post('transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
 
-        // 2. Rute POS ditambahkan di sini, berdampingan dengan transaksi
+        Route::get('/transaksi/{id}/print', [TransaksiController::class, 'print'])->name('transaksi.print');
+        Route::get('/pos/{id}/print', [PosController::class, 'print'])->name('pos.print');
+
+        // 3. Rute POS ditambahkan di sini, berdampingan dengan transaksi
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
     });

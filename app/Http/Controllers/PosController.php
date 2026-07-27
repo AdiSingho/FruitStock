@@ -59,7 +59,11 @@ class PosController extends Controller
             // Simpan semua proses di atas secara permanen
             DB::commit();
 
-            return redirect()->route('pos.index')->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($penjualan->kembalian, 0, ',', '.'));
+            // Return dengan variabel $penjualan yang sudah benar
+            return back()->with([
+                'success' => 'Transaksi berhasil! Kembalian: Rp ' . number_format($penjualan->kembalian, 0, ',', '.'),
+                'print_id' => $penjualan->id // Menggunakan $penjualan->id agar bisa dibaca tombol cetak
+            ]);
 
         } catch (\Exception $e) {
             // Jika ada error, batalkan semua proses (rollback)
@@ -67,5 +71,22 @@ class PosController extends Controller
             
             return back()->with('error', 'Terjadi kesalahan saat memproses transaksi: ' . $e->getMessage());
         }
+    }
+
+    // FUNGSI BARU UNTUK CETAK STRUK POS
+    public function print($id)
+    {
+        $penjualan = Penjualan::findOrFail($id);
+        
+        // Ambil detail penjualan
+        $details = DetailPenjualan::where('penjualan_id', $id)->get();
+        
+        // Kita ambil manual nama buahnya agar aman (tidak error relasi)
+        foreach($details as $detail) {
+            $stok = Stok::with('buah')->find($detail->stok_id);
+            $detail->nama_buah = $stok && $stok->buah ? $stok->buah->nama_buah : 'Buah';
+        }
+        
+        return view('pos.print', compact('penjualan', 'details'));
     }
 }

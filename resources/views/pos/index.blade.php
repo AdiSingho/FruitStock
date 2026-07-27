@@ -6,10 +6,20 @@
 
 <!-- TEMPAT MUNCULNYA PESAN SUKSES / ERROR -->
 @if(session('success'))
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
-        <p class="font-bold">Berhasil!</p>
-        <p>{{ session('success') }}</p>
+<div class="mb-6 bg-green-100 p-4 rounded-lg flex items-center justify-between border-l-4 border-green-500 shadow-sm">
+    <div>
+        <p class="font-bold text-green-800">Berhasil!</p>
+        <p class="text-green-700">{{ session('success') }}</p>
     </div>
+    
+    <!-- Tombol cetak sudah diubah route-nya ke pos.print -->
+    @if(session('print_id'))
+    <a href="{{ route('pos.print', session('print_id')) }}" target="_blank" class="bg-white border-2 border-green-600 text-green-700 hover:bg-green-700 hover:text-white px-6 py-2 rounded-lg font-bold text-sm transition-colors flex items-center shadow">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        CETAK STRUK
+    </a>
+    @endif
+</div>
 @endif
 
 @if(session('error'))
