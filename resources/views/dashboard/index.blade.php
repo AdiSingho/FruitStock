@@ -30,27 +30,35 @@
     </div>
 
     <!-- Card 2: Hampir Habis -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border {{ $itemHampirHabis > 0 ? 'border-orange-200' : 'border-gray-100' }}">
         <div class="flex justify-between items-start mb-4">
-            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+            <div class="w-12 h-12 {{ $itemHampirHabis > 0 ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600' }} rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-2.5 py-1 rounded-md">Perhatian</span>
+            @if($itemHampirHabis > 0)
+                <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-2.5 py-1 rounded-md">Perhatian</span>
+            @else
+                <span class="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-md">Aman</span>
+            @endif
         </div>
         <p class="text-sm text-gray-500 font-medium mb-1">Item Hampir Habis</p>
-        <h3 class="text-3xl font-bold text-gray-900">{{ $itemHampirHabis }} Item</h3>
+        <h3 class="text-3xl font-bold {{ $itemHampirHabis > 0 ? 'text-orange-600' : 'text-gray-900' }}">{{ $itemHampirHabis }} Item</h3>
     </div>
 
     <!-- Card 3: Kritis -->
-    <div class="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-100">
+    <div class="{{ $mendekatBusuk > 0 ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100' }} p-6 rounded-2xl shadow-sm border">
         <div class="flex justify-between items-start mb-4">
-            <div class="w-12 h-12 bg-red-200 text-red-600 rounded-xl flex items-center justify-center">
+            <div class="w-12 h-12 {{ $mendekatBusuk > 0 ? 'bg-red-200 text-red-600' : 'bg-green-100 text-green-600' }} rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
             </div>
-            <span class="bg-red-200 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-md">Kritis</span>
+            @if($mendekatBusuk > 0)
+                <span class="bg-red-200 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-md">Kritis</span>
+            @else
+                <span class="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-md">Aman</span>
+            @endif
         </div>
-        <p class="text-sm text-red-600 font-medium mb-1">Mendekati Busuk</p>
-        <h3 class="text-3xl font-bold text-red-900">{{ $mendekatBusuk }} Item</h3>
+        <p class="text-sm {{ $mendekatBusuk > 0 ? 'text-red-600' : 'text-gray-500' }} font-medium mb-1">Mendekati Busuk</p>
+        <h3 class="text-3xl font-bold {{ $mendekatBusuk > 0 ? 'text-red-900' : 'text-gray-900' }}">{{ $mendekatBusuk }} Item</h3>
     </div>
 
     <!-- Card 4: Penjualan -->
@@ -61,7 +69,7 @@
             </div>
         </div>
         <p class="text-sm text-gray-500 font-medium mb-1">Penjualan Hari Ini</p>
-        <h3 class="text-3xl font-bold text-gray-900">Rp {{ number_format($penjualanHariIni) }}</h3>
+        <h3 class="text-3xl font-bold text-gray-900">Rp {{ number_format($penjualanHariIni, 0, ',', '.') }}</h3>
     </div>
 </div>
 
@@ -82,19 +90,30 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($stokKritis as $item)
-                <tr>
+                <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 font-medium text-gray-900">{{ $item->buah->nama_buah }}</td>
                     <td class="px-6 py-4 text-gray-600">{{ $item->jumlah }} kg</td>
-                    <td class="px-6 py-4 text-red-600">{{ \Carbon\Carbon::parse($item->estimasi_kadaluarsa)->diffForHumans() }}</td>
+                    <td class="px-6 py-4 {{ \Carbon\Carbon::parse($item->estimasi_kadaluarsa)->isPast() ? 'text-red-600 font-bold' : 'text-orange-600' }}">
+                        {{ \Carbon\Carbon::parse($item->estimasi_kadaluarsa)->diffForHumans() }}
+                    </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $item->status == 'Kritis' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700' }}">
-                            {{ $item->status }}
-                        </span>
+                        @if(\Carbon\Carbon::parse($item->estimasi_kadaluarsa)->isPast())
+                            <span class="bg-red-100 text-red-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200">Expired</span>
+                        @elseif($item->jumlah <= 0)
+                            <span class="bg-red-100 text-red-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200">Stok Habis</span>
+                        @elseif(\Carbon\Carbon::parse($item->estimasi_kadaluarsa)->lte(\Carbon\Carbon::now()->addDays(3)))
+                            <span class="bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-orange-200">Mendekati Busuk</span>
+                        @elseif($item->jumlah < 10)
+                            <span class="bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-yellow-200">Hampir Habis</span>
+                        @endif
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">Tidak ada stok kritis.</td>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Semua stok aman dan terkendali.
+                    </td>
                 </tr>
                 @endforelse
             </tbody>

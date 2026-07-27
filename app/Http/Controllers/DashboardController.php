@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stok;
-use App\Models\Penjualan; // Wajib ditambahkan agar bisa membaca tabel penjualan
+use App\Models\Penjualan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -20,8 +20,10 @@ class DashboardController extends Controller
         // 3. Mendekati Busuk (Estimasi kadaluarsa dalam 3 hari ke depan)
         $mendekatBusuk = Stok::where('estimasi_kadaluarsa', '<=', Carbon::now()->addDays(3))->count();
 
-        // 4. Data untuk tabel (5 data yang paling dekat kadaluarsa)
+        // 4. Data untuk tabel (HANYA mengambil yang stok < 10 ATAU kadaluarsa <= 3 hari)
         $stokKritis = Stok::with('buah')
+            ->where('jumlah', '<', 10)
+            ->orWhere('estimasi_kadaluarsa', '<=', Carbon::now()->addDays(3))
             ->orderBy('estimasi_kadaluarsa', 'asc')
             ->limit(5)
             ->get();
