@@ -34,6 +34,7 @@
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">Inventory & POS</span>
             </div>
         </div>
+        
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
             <!-- Beranda -->
@@ -82,6 +83,12 @@
             <a href="{{ route('transaksi.index') }}" class="flex items-center px-4 py-3 rounded-lg font-medium transition-colors border-l-4 {{ request()->routeIs('transaksi.*') ? 'bg-fruit-green-light text-fruit-green border-fruit-green' : 'text-gray-600 hover:bg-gray-50 hover:text-fruit-green border-transparent' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 POS / Kasir
+            </a>
+
+            <!-- Laporan -->
+            <a href="{{ route('laporan.index') }}" class="flex items-center px-4 py-3 rounded-lg font-medium transition-colors border-l-4 {{ request()->routeIs('laporan.*') ? 'bg-fruit-green-light text-fruit-green border-fruit-green' : 'text-gray-600 hover:bg-gray-50 hover:text-fruit-green border-transparent' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Laporan
             </a>
         </nav>
 

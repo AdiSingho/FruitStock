@@ -27,7 +27,6 @@ class DashboardController extends Controller
             ->get();
 
         // 5. MENGHITUNG PENJUALAN HARI INI
-        // Mencari semua transaksi di hari ini, lalu menjumlahkan kolom 'total_harga'
         $penjualanHariIni = Penjualan::whereDate('created_at', Carbon::today())->sum('total_harga');
 
         return view('dashboard.index', compact(

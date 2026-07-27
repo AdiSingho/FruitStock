@@ -40,4 +40,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/checkout', [PosController::class, 'store'])->name('pos.store');
     });
+
+    // Admin
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/laporan', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+    });
 });
