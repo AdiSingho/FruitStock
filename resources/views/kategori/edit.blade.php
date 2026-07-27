@@ -1,5 +1,5 @@
-@extends('layouts.main')
-@section('main-content')
+@extends('layouts.app')
+@section('content')
 <div class="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-sm border">
     <h2 class="text-xl font-bold mb-6">Edit Kategori</h2>
     <form action="{{ route('kategori.update', $kategori->id) }}" method="POST">

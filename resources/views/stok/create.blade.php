@@ -1,8 +1,8 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('title', 'Tambah Stok - FruitStock')
 
-@section('main-content')
+@section('content')
 <div class="max-w-2xl mx-auto">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Tambah Stok Baru</h1>

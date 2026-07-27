@@ -1,8 +1,8 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('title', 'Beranda - FruitStock')
 
-@section('main-content')
+@section('content')
 <div class="mb-8 flex justify-between items-end">
     <div>
         <h1 class="text-3xl font-bold text-gray-900">Beranda</h1>

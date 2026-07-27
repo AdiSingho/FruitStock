@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController, PosController};
+use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController, PosController, ProfileController};
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -13,6 +13,9 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin & Gudang
     Route::middleware('role:admin,gudang')->group(function () {

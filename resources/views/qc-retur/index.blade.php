@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
-@section('main-content')
+@section('content')
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     <!-- BAGIAN KIRI: Form Catatan Baru -->

@@ -1,5 +1,5 @@
-@extends('layouts.main')
-@section('main-content')
+@extends('layouts.app')
+@section('content')
 <div class="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
     <h2 class="text-xl font-bold mb-6">Tambah Buah</h2>
     <form action="{{ route('buah.store') }}" method="POST">

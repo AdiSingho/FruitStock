@@ -42,6 +42,12 @@
                 Beranda
             </a>
 
+            <!-- Pengaturan Profil -->
+            <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 rounded-lg font-medium transition-colors border-l-4 {{ request()->routeIs('profile.edit') ? 'bg-fruit-green-light text-fruit-green border-fruit-green' : 'text-gray-600 hover:bg-gray-50 hover:text-fruit-green border-transparent' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                Pengaturan Profil
+            </a>
+
             <!-- Master Buah -->
             <a href="{{ route('buah.index') }}" class="flex items-center px-4 py-3 rounded-lg font-medium transition-colors border-l-4 {{ request()->routeIs('buah.*') ? 'bg-fruit-green-light text-fruit-green border-fruit-green' : 'text-gray-600 hover:bg-gray-50 hover:text-fruit-green border-transparent' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
@@ -79,7 +85,6 @@
             </a>
         </nav>
 
-        <!-- Tombol Logout -->
         <div class="p-4 border-t border-gray-200">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -99,10 +104,23 @@
                 </div>
                 <input type="text" name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:border-fruit-green focus:ring-2 focus:ring-fruit-green-light text-sm transition-all" placeholder="Cari buah, stok...">
             </form>
+
+            <!-- Profil & Notifikasi -->
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-3">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-800">{{ auth()->user()->name ?? 'User' }}</p>
+                        <p class="text-[10px] text-gray-500 uppercase">{{ auth()->user()->role ?? 'User' }}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'User') }}&background=006B4D&color=fff" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
         </header>
 
         <div class="flex-1 overflow-y-auto p-8">
-            @yield('main-content')
+            @yield('content')
         </div>
     </main>
 </div>

@@ -1,8 +1,8 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('title', 'Kategori - FruitStock')
 
-@section('main-content')
+@section('content')
 <div class="mb-6 flex justify-between items-center">
     <div>
         <h1 class="text-2xl font-bold text-gray-900">Data Kategori</h1>

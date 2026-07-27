@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.app')
 @section('title', 'Gudang - FruitStock')
-@section('main-content')
+@section('content')
 <div class="mb-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-900">Data Gudang</h1>
     <a href="{{ route('gudang.create') }}" class="bg-fruit-green text-white px-4 py-2 rounded-lg text-sm transition-colors hover:bg-green-800">

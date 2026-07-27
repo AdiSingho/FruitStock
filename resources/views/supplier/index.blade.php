@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.app')
 @section('title', 'Supplier - FruitStock')
-@section('main-content')
+@section('content')
 <div class="mb-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-900">Data Supplier</h1>
     <a href="{{ route('supplier.create') }}" class="bg-fruit-green text-white px-4 py-2 rounded-lg text-sm transition-colors hover:bg-green-800">

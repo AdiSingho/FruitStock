@@ -23,6 +23,11 @@
             Beranda
         </a>
 
+        <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 rounded-lg font-medium transition-colors border-l-4 {{ request()->routeIs('profile.edit') ? 'bg-fruit-green-light text-fruit-green border-fruit-green' : 'text-gray-600 hover:bg-gray-50 hover:text-fruit-green border-transparent' }}">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            Pengaturan Profil
+        </a>
+
         <!-- Master Buah -->
         <a href="{{ route('buah.index') }}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-fruit-green rounded-lg font-medium transition-colors border-l-4 border-transparent">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>

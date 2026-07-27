@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.app')
 @section('title', 'Stok & Gudang - FruitStock')
-@section('main-content')
+@section('content')
 <div class="mb-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-900">Gudang & Stok</h1>
     <!-- Tombol ini saya arahkan ke route tambah stok agar berfungsi -->

@@ -2,7 +2,7 @@
 
 @section('title', 'Riwayat Transaksi - FruitStock')
 
-@section('main-content')
+@section('content')
 
 <!-- ================= MULAI BLOK NOTIFIKASI SUKSES & TOMBOL CETAK ================= -->
 @if(session('success'))

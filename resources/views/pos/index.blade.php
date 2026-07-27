@@ -1,8 +1,8 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('title', 'Kasir (POS) - FruitStock')
 
-@section('main-content')
+@section('content')
 
 <!-- TEMPAT MUNCULNYA PESAN SUKSES / ERROR -->
 @if(session('success'))

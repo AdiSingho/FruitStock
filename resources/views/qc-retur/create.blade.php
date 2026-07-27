@@ -1,6 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
-@section('main-content')
+@section('content')
 <div class="bg-white p-6 rounded-2xl shadow-sm border max-w-3xl mx-auto">
     <h2 class="text-xl font-bold mb-6">Catat Barang Rusak / Retur (QC)</h2>
 
