@@ -17,6 +17,9 @@
             <textarea name="keterangan" class="w-full border rounded-lg p-3"></textarea>
         </div>
         <button type="submit" class="w-full bg-fruit-green text-white py-3 rounded-lg font-bold">SIMPAN</button>
+        <a href="{{ route('gudang.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium text-sm transition-colors">
+            Batal
+        </a>
     </form>
 </div>
 @endsection

@@ -25,6 +25,10 @@
             <div><label class="block text-sm font-medium">Harga Jual</label><input type="number" name="harga_jual" value="{{ $buah->harga_jual }}" class="w-full border rounded-lg p-3"></div>
         </div>
         <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">UPDATE</button>
+
+        <a href="{{ url()->previous() }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium text-sm transition-colors">
+            Batal
+        </a>
     </form>
 </div>
 @endsection

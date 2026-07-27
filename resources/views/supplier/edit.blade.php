@@ -17,6 +17,9 @@
             <input type="text" name="no_hp" value="{{ $supplier->no_hp }}" class="w-full border rounded-lg p-3" required>
         </div>
         <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">UPDATE</button>
+        <a href="{{ route('supplier.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium text-sm transition-colors">
+            Batal
+        </a>
     </form>
 </div>
 @endsection

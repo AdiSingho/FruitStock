@@ -35,6 +35,11 @@
             <input type="text" name="satuan" class="w-full border rounded-lg p-3" required>
         </div>
         <button type="submit" class="w-full bg-fruit-green text-white py-3 rounded-lg font-bold">SIMPAN</button>
+        
+        <a href="{{ url()->previous() }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium text-sm transition-colors">
+            Batal
+        </a>
     </form>
 </div>
+
 @endsection

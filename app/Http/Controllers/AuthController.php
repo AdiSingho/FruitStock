@@ -27,7 +27,8 @@ class AuthController extends Controller
             $request->session()->regenerate();
             
             // Arahkan ke dashboard jika sukses
-            return redirect()->intended('/dashboard');
+            
+            return redirect('/dashboard');
         }
 
         // Jika salah, kembalikan ke halaman login beserta pesan error
