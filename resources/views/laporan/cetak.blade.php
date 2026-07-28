@@ -39,22 +39,28 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($transaksi as $index => $item)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $item->no_transaksi ?? ($item->id ?? 'N/A') }}</td>
-                <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
-                <td style="text-align: right;">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+            @forelse($transaksiDetail as $index => $item)
+            <tr class="border-b">
+                <!-- No Transaksi dari relasi transaksi -->
+                <td class="p-3">{{ $item->transaksi->id ?? 'N/A' }}</td>
+
+                <!-- Tanggal dari relasi transaksi -->
+                <td class="p-3">{{ \Carbon\Carbon::parse($item->transaksi->tanggal_transaksi)->format('d-m-Y H:i') }}</td>
+
+                <!-- Nama Buah dari relasi stok dan buah -->
+                <td class="p-3">{{ $item->stok->buah->nama_buah ?? 'N/A' }}</td>
+
+                <!-- Qty dari detail -->
+                <td class="p-3">{{ $item->qty }}</td>
+
+                <!-- Subtotal -->
+                <td class="p-3 text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="4" style="text-align: center;">Tidak ada data penjualan pada rentang tanggal ini.</td>
+                <td colspan="5" class="p-3 text-center">Tidak ada data transaksi.</td>
             </tr>
             @endforelse
-            <tr class="total-row">
-                <td colspan="3" style="text-align: right;">TOTAL PENDAPATAN :</td>
-                <td style="text-align: right;">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-            </tr>
         </tbody>
     </table>
 

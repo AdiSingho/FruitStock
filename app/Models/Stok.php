@@ -22,9 +22,9 @@ class Stok extends Model
     ];
 
     
-    public function buah()
+    public function buah() 
     {
-        return $this->belongsTo(Buah::class);
+        return $this->belongsTo(Buah::class, 'buah_id');
     }
 
     public function gudang()

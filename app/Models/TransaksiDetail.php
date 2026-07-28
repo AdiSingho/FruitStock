@@ -17,13 +17,11 @@ class TransaksiDetail extends Model
         'subtotal'
     ];
 
-    public function transaksi()
-    {
-        return $this->belongsTo(Transaksi::class);
+    public function transaksi() {
+        return $this->belongsTo(Transaksi::class, 'transaksi_id');
     }
 
-    public function stok()
-    {
-        return $this->belongsTo(Stok::class);
+    public function stok() {
+        return $this->belongsTo(Stok::class, 'stok_id');
     }
 }
