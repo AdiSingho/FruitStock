@@ -3,85 +3,79 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stok;
-use App\Models\Penjualan;
-use App\Models\DetailPenjualan;
+use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; 
+use Carbon\Carbon;
 
 class PosController extends Controller
 {
     public function index()
     {
-        // Mengambil data stok yang jumlahnya lebih dari 0 beserta relasi buah
         $stoks = Stok::with('buah')->where('jumlah', '>', 0)->get(); 
-        
         return view('pos.index', compact('stoks'));
     }
 
     public function store(Request $request)
     {
-        // Validasi input dari form HTML
+        // 1. Validasi
         $request->validate([
             'stok_id' => 'required|array',
             'qty' => 'required|array',
             'harga_satuan' => 'required|array',
             'total_harga' => 'required|numeric',
-            'bayar' => 'required|numeric|gte:total_harga', // Bayar harus lebih besar atau sama dengan total
+            'bayar' => 'required|numeric|gte:total_harga', 
         ]);
 
-        // Mulai transaksi database
+        // 2. Hitung kembalian secara manual di sini (Hanya untuk tampil di notifikasi)
+        $jumlahBayar = (float)$request->bayar;
+        $totalBelanja = (float)$request->total_harga;
+        $kembalian = $jumlahBayar - $totalBelanja;
+
         DB::beginTransaction();
 
         try {
-            // 1. Simpan ke tabel penjualans
-            $penjualan = Penjualan::create([
-                'no_transaksi' => 'TRX-' . date('YmdHis'),
-                'total_harga' => $request->total_harga,
-                'bayar' => $request->bayar,
-                'kembalian' => $request->bayar - $request->total_harga,
+            // 3. Simpan hanya kolom yang ada di database
+            $transaksi = Transaksi::create([
+                'tanggal_transaksi' => Carbon::now(), 
+                'total_harga' => $totalBelanja,
+                'user_id' => auth()->id(),
             ]);
 
-            // 2. Looping array stok_id untuk menyimpan detail transaksi dan mengurangi stok
+            // 4. Looping detail transaksi
             foreach ($request->stok_id as $index => $stokId) {
-                DetailPenjualan::create([
-                    'penjualan_id' => $penjualan->id,
+                TransaksiDetail::create([
+                    'transaksi_id' => $transaksi->id, 
                     'stok_id' => $stokId,
-                    'jumlah' => $request->qty[$index],
+                    'qty' => $request->qty[$index], 
                     'harga_satuan' => $request->harga_satuan[$index],
                     'subtotal' => $request->qty[$index] * $request->harga_satuan[$index],
                 ]);
 
-                // Kurangi stok di gudang
                 $stok = Stok::find($stokId);
                 $stok->decrement('jumlah', $request->qty[$index]);
             }
 
-            // Simpan semua proses di atas secara permanen
             DB::commit();
 
-            // Return dengan variabel $penjualan yang sudah benar
+            // 5. Kirim pesan sukses menggunakan variabel $kembalian yang sudah dihitung manual
             return back()->with([
-                'success' => 'Transaksi berhasil! Kembalian: Rp ' . number_format($penjualan->kembalian, 0, ',', '.'),
-                'print_id' => $penjualan->id // Menggunakan $penjualan->id agar bisa dibaca tombol cetak
+                'success' => 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'),
+                'print_id' => $transaksi->id 
             ]);
 
         } catch (\Exception $e) {
-            // Jika ada error, batalkan semua proses (rollback)
             DB::rollback();
-            
-            return back()->with('error', 'Terjadi kesalahan saat memproses transaksi: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    // FUNGSI BARU UNTUK CETAK STRUK POS
     public function print($id)
     {
-        $penjualan = Penjualan::findOrFail($id);
+        $penjualan = Transaksi::findOrFail($id);
+        $details = TransaksiDetail::where('transaksi_id', $id)->get();
         
-        // Ambil detail penjualan
-        $details = DetailPenjualan::where('penjualan_id', $id)->get();
-        
-        // Kita ambil manual nama buahnya agar aman (tidak error relasi)
         foreach($details as $detail) {
             $stok = Stok::with('buah')->find($detail->stok_id);
             $detail->nama_buah = $stok && $stok->buah ? $stok->buah->nama_buah : 'Buah';

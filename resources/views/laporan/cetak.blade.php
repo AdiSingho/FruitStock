@@ -32,35 +32,39 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
+                <th style="width: 5%; text-align: center;">No</th>
                 <th style="width: 30%;">No Transaksi</th>
                 <th style="width: 35%;">Tanggal Transaksi</th>
                 <th style="width: 30%; text-align: right;">Total Harga</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($transaksiDetail as $index => $item)
-            <tr class="border-b">
-                <!-- No Transaksi dari relasi transaksi -->
-                <td class="p-3">{{ $item->transaksi->id ?? 'N/A' }}</td>
+            {{-- Menggunakan variabel yang sudah dikelompokkan dari Controller --}}
+            @php $no = 1; @endphp
+            @forelse($groupedTransaksi as $transaksi_id => $items)
+            <tr>
+                <td style="text-align: center;">{{ $no++ }}</td>
+                
+                <!-- Format Nomor Invoice -->
+                <td>INV-{{ str_pad($transaksi_id, 4, '0', STR_PAD_LEFT) }}</td>
 
-                <!-- Tanggal dari relasi transaksi -->
-                <td class="p-3">{{ \Carbon\Carbon::parse($item->transaksi->tanggal_transaksi)->format('d-m-Y H:i') }}</td>
+                <!-- Ambil tanggal dari item pertama di struk tersebut -->
+                <td>{{ \Carbon\Carbon::parse($items->first()->transaksi->tanggal_transaksi)->format('d-m-Y H:i') }}</td>
 
-                <!-- Nama Buah dari relasi stok dan buah -->
-                <td class="p-3">{{ $item->stok->buah->nama_buah ?? 'N/A' }}</td>
-
-                <!-- Qty dari detail -->
-                <td class="p-3">{{ $item->qty }}</td>
-
-                <!-- Subtotal -->
-                <td class="p-3 text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                <!-- Jumlahkan subtotal untuk keseluruhan struk -->
+                <td style="text-align: right;">Rp {{ number_format($items->sum('subtotal'), 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="p-3 text-center">Tidak ada data transaksi.</td>
+                <td colspan="4" style="text-align: center;">Tidak ada data transaksi.</td>
             </tr>
             @endforelse
+
+            <!-- Baris Total Pendapatan Keseluruhan -->
+            <tr class="total-row">
+                <td colspan="3" style="text-align: right;">TOTAL PENDAPATAN</td>
+                <td style="text-align: right;">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
 

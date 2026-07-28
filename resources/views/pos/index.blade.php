@@ -4,18 +4,15 @@
 
 @section('content')
 
-<!-- TEMPAT MUNCULNYA PESAN SUKSES / ERROR -->
+<!-- PESAN SUKSES / ERROR -->
 @if(session('success'))
 <div class="mb-6 bg-green-100 p-4 rounded-lg flex items-center justify-between border-l-4 border-green-500 shadow-sm">
     <div>
         <p class="font-bold text-green-800">Berhasil!</p>
         <p class="text-green-700">{{ session('success') }}</p>
     </div>
-    
-    <!-- Tombol cetak sudah diubah route-nya ke pos.print -->
     @if(session('print_id'))
     <a href="{{ route('pos.print', session('print_id')) }}" target="_blank" class="bg-white border-2 border-green-600 text-green-700 hover:bg-green-700 hover:text-white px-6 py-2 rounded-lg font-bold text-sm transition-colors flex items-center shadow">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
         CETAK STRUK
     </a>
     @endif
@@ -29,31 +26,17 @@
     </div>
 @endif
 
-<!-- Jika ada error dari Controller -->
-@if ($errors->any())
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
-        <ul class="list-disc pl-5">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- BAGIAN KIRI: DAFTAR PRODUK (KATALOG) -->
+    <!-- BAGIAN KIRI: DAFTAR PRODUK -->
     <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border">
         <h2 class="text-xl font-bold mb-6">Pilih Produk</h2>
-        
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($stoks as $stok)
             <div class="border p-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors border-gray-200" 
                  onclick="tambahKeKeranjang({{ $stok->id }}, '{{ $stok->buah->nama_buah }}', {{ $stok->buah->harga_jual }}, {{ $stok->jumlah }})">
-                
                 <div class="font-bold text-gray-800">{{ $stok->buah->nama_buah }}</div>
                 <div class="text-xs text-gray-500 mb-2">Batch: {{ $stok->kode_batch }}</div>
                 <div class="text-sm font-medium text-blue-600">Sisa Stok: {{ $stok->jumlah }} kg</div>
-                
                 <div class="mt-2 text-lg font-bold text-green-600">
                     Rp {{ number_format($stok->buah->harga_jual, 0, ',', '.') }}
                 </div>
@@ -62,13 +45,11 @@
         </div>
     </div>
 
-    <!-- BAGIAN KANAN: KERANJANG BELANJA -->
+    <!-- BAGIAN KANAN: KERANJANG -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border h-fit sticky top-6">
         <h2 class="text-xl font-bold mb-6">Keranjang</h2>
-        
         <form action="{{ route('pos.store') }}" method="POST">
             @csrf
-            
             <div id="keranjang-items" class="min-h-[150px] mb-4 space-y-3">
                 <p class="text-gray-400 text-sm text-center italic mt-10" id="pesan-kosong">Keranjang masih kosong...</p>
             </div>
@@ -81,7 +62,6 @@
                 
                 <input type="hidden" name="total_harga" id="input-total-harga" value="0">
                 
-                <!-- Input Uang Bayar -->
                 <div class="mb-4">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Uang Bayar (Rp)</label>
                     <input type="number" name="bayar" class="w-full border border-gray-300 rounded-lg p-3 font-bold text-lg" required min="0">
@@ -121,22 +101,17 @@
 
     function ubahQty(stokId, nilaiBaru) {
         let qtyBaru = parseFloat(nilaiBaru);
-        
         if (isNaN(qtyBaru) || qtyBaru <= 0) {
             delete keranjang[stokId];
-        } 
-        else if (qtyBaru > keranjang[stokId].max) {
-            alert('Jumlah melebihi stok yang tersedia!');
+        } else if (qtyBaru > keranjang[stokId].max) {
+            alert('Jumlah melebihi stok!');
             keranjang[stokId].qty = keranjang[stokId].max;
-        } 
-        else {
+        } else {
             keranjang[stokId].qty = qtyBaru;
         }
-
         if(keranjang[stokId]) {
             keranjang[stokId].subtotal = keranjang[stokId].qty * keranjang[stokId].harga;
         }
-        
         renderKeranjang();
     }
 
@@ -160,17 +135,14 @@
                         <div class="font-bold text-gray-800">${item.nama}</div>
                         <div class="text-xs text-gray-500">@ Rp ${item.harga.toLocaleString('id-ID')}</div>
                     </div>
-                    
                     <div class="mx-3">
                         <input type="number" step="any" min="0" max="${item.max}" value="${item.qty}" 
                                class="w-16 border rounded text-center p-1 font-bold bg-gray-50 focus:bg-white"
                                onchange="ubahQty(${stokId}, this.value)">
                     </div>
-
                     <div class="font-bold text-green-600 w-24 text-right">
                         Rp ${item.subtotal.toLocaleString('id-ID')}
                     </div>
-                    
                     <input type="hidden" name="stok_id[]" value="${stokId}">
                     <input type="hidden" name="qty[]" value="${item.qty}">
                     <input type="hidden" name="harga_satuan[]" value="${item.harga}">

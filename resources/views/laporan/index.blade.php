@@ -25,29 +25,48 @@
     </div>
 
     <!-- Tabel -->
+    <!-- Tabel -->
     <table class="w-full text-left">
         <thead class="bg-gray-50">
             <tr>
                 <th class="p-3">No Transaksi</th>
                 <th class="p-3">Tanggal</th>
-                <th class="p-3">Nama Buah</th>
-                <th class="p-3">Qty</th>
-                <th class="p-3 text-right">Subtotal</th>
+                <th class="p-3">Detail Item (Buah & Qty)</th>
+                <th class="p-3 text-right">Total Transaksi</th>
             </tr>
         </thead>
         <tbody>
-            {{-- Menggunakan @forelse agar tampilan lebih rapi saat data kosong --}}
-            @forelse($transaksiDetail as $item)
-            <tr class="border-b">
-                <td class="p-3">{{ $item->transaksi->id ?? 'N/A' }}</td>
-                <td class="p-3">{{ \Carbon\Carbon::parse($item->transaksi->tanggal_transaksi)->format('d-m-Y H:i') }}</td>
-                <td class="p-3">{{ $item->stok->buah->nama_buah ?? 'N/A' }}</td>
-                <td class="p-3">{{ $item->qty }}</td>
-                <td class="p-3 text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+            {{-- Loop berdasarkan kelompok transaksi_id --}}
+            @forelse($groupedTransaksi as $transaksi_id => $items)
+            <tr class="border-b hover:bg-gray-50">
+                <!-- ID Transaksi (Hanya Tampil 1 Kali) -->
+                <td class="p-3 font-mono text-sm text-gray-700">
+                    INV-{{ str_pad($transaksi_id, 4, '0', STR_PAD_LEFT) }}
+                </td>
+                
+                <!-- Ambil tanggal dari item pertama di kelompok tersebut -->
+                <td class="p-3">
+                    {{ \Carbon\Carbon::parse($items->first()->transaksi->tanggal_transaksi)->format('d-m-Y H:i') }}
+                </td>
+                
+                <!-- Looping nama buah di dalam 1 sel tabel -->
+                <td class="p-3">
+                    @foreach($items as $item)
+                        <div class="text-sm mb-1 text-gray-600">
+                            &bull; {{ $item->stok->buah->nama_buah ?? 'N/A' }} 
+                            <span class="font-semibold">(Qty: {{ $item->qty }})</span>
+                        </div>
+                    @endforeach
+                </td>
+                
+                <!-- Jumlahkan subtotal untuk keseluruhan struk ini -->
+                <td class="p-3 text-right font-bold text-green-700">
+                    Rp {{ number_format($items->sum('subtotal'), 0, ',', '.') }}
+                </td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="p-3 text-center text-gray-500">Tidak ada data transaksi pada periode ini.</td>
+                <td colspan="4" class="p-3 text-center text-gray-500">Tidak ada data transaksi pada periode ini.</td>
             </tr>
             @endforelse
         </tbody>
