@@ -4,11 +4,18 @@
 <div class="bg-white p-6 rounded-xl shadow-sm">
     <h2 class="text-2xl font-bold mb-6">Laporan Penjualan</h2>
 
-    <!-- Form Filter -->
-    <form action="{{ route('laporan.index') }}" method="GET" class="flex gap-4 mb-6">
+    <!-- Form Filter & Tombol Cetak -->
+    <form action="{{ route('laporan.index') }}" method="GET" class="flex gap-4 mb-6 items-center">
         <input type="date" name="start_date" value="{{ $startDate }}" class="border p-2 rounded">
         <input type="date" name="end_date" value="{{ $endDate }}" class="border p-2 rounded">
-        <button type="submit" class="bg-fruit-green text-white px-4 py-2 rounded">Filter</button>
+        <button type="submit" class="bg-fruit-green hover:bg-green-800 text-white px-4 py-2 rounded transition-colors">
+            Filter
+        </button>
+
+        <!-- TAMPILAN TOMBOL CETAK DI SINI -->
+        <a href="{{ route('laporan.cetak', ['start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank" class="bg-gray-700 hover:bg-gray-900 text-white px-4 py-2 rounded transition-colors flex items-center gap-2 ml-auto">
+            🖨️ Cetak PDF / Printer
+        </a>
     </form>
 
     <!-- Total Pendapatan -->

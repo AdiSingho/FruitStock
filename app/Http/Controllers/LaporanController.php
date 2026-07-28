@@ -22,4 +22,18 @@ class LaporanController extends Controller
 
         return view('laporan.index', compact('transaksi', 'totalPendapatan', 'startDate', 'endDate'));
     }
+
+   public function cetak(Request $request)
+    {
+        // Ambil filter tanggal dari URL
+        $tgl_mulai = $request->start_date ?? date('Y-m-d');
+        $tgl_akhir = $request->end_date ?? date('Y-m-d');
+
+        // Ambil data tanpa memanggil relasi buah yang tidak ada
+        $transaksi = \App\Models\Penjualan::whereBetween('created_at', [$tgl_mulai . ' 00:00:00', $tgl_akhir . ' 23:59:59'])->get();
+        
+        $totalPendapatan = $transaksi->sum('total_harga');
+
+        return view('laporan.cetak', compact('transaksi', 'tgl_mulai', 'tgl_akhir', 'totalPendapatan'));
+    }
 }

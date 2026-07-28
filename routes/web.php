@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController, PosController, ProfileController};
+use App\Http\Controllers\{AuthController, DashboardController, KategoriController, GudangController, SupplierController, BuahController, StokController, TransaksiController, QcReturController, PosController, ProfileController, LaporanController};
 
 // Guest (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -44,5 +44,6 @@ Route::middleware('auth')->group(function () {
     // Admin
     Route::middleware('role:admin')->group(function () {
         Route::get('/laporan', [App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     });
 });
