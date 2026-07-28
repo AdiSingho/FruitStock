@@ -14,11 +14,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Admin & Gudang
     Route::middleware('role:admin,gudang')->group(function () {
+
+        Route::get('/buah/search', [BuahController::class, 'search'])->name('buah.search');
+
         Route::resource('kategori', KategoriController::class);
         Route::resource('gudang', GudangController::class);
         Route::resource('supplier', SupplierController::class);

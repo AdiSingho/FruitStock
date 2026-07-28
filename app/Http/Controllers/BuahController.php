@@ -75,4 +75,16 @@ class BuahController extends Controller
         \App\Models\Buah::findOrFail($id)->delete();
         return redirect()->route('buah.index')->with('success', 'Data buah berhasil dihapus!');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+        
+        // relasi 'kategori' dan 'stoks' dimuat (Eager Loading)
+        $buahs = \App\Models\Buah::with(['kategori', 'stoks'])
+                    ->where('nama_buah', 'LIKE', '%' . $query . '%')
+                    ->get();
+
+        return response()->json($buahs);
+    }
 }
